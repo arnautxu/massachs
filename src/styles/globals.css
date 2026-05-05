@@ -121,7 +121,7 @@ button { font: inherit; cursor: pointer; background: none; border: 0; padding: 0
 [data-revealed="true"] [data-stagger="4"] { transition-delay: 240ms; }
 [data-revealed="true"] [data-stagger="5"] { transition-delay: 300ms; }
 
-/* ─── Hero scroll cue ───────────────────────────────────────────────────── */
+/* ─── Scroll cue (used in Hero bottom) ─────────────────────────────────── */
 @keyframes scroll-cue {
   0%   { transform: translateY(0);   opacity: 0.4; }
   50%  { transform: translateY(8px); opacity: 1;   }
@@ -217,28 +217,10 @@ button { font: inherit; cursor: pointer; background: none; border: 0; padding: 0
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: oklch(50% 0.014 70 / 0.35); }
 
-/* ─── Reduced motion ────────────────────────────────────────────────────── */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-  [data-reveal] { opacity: 1; transform: none; }
-  .tile-wrap::after { display: none; }
-}
-
 /* ─── Canvas ────────────────────────────────────────────────────────────── */
 canvas { display: block; touch-action: none; }
 
-/* ─── Hero ticker ───────────────────────────────────────────────────────── */
-.hero-ticker {
-  border-block: 1px solid var(--line-on-light);
-  overflow: hidden;
-  margin-inline: calc(-1 * clamp(20px, 5vw, 80px));
-}
-
-/* ─── Auto-marquee (hero ticker, contact footer) ────────────────────────── */
+/* ─── Auto-marquee (contact footer) ────────────────────────────────────── */
 .auto-marquee {
   overflow: hidden;
   width: 100%;
@@ -326,25 +308,6 @@ canvas { display: block; touch-action: none; }
 .section--dark + * .section-nav,
 body:has(.section--dark:hover) .section-nav { color: var(--color-text-dark); }
 
-/* ─── Word reveal (Hero) ────────────────────────────────────────────────── */
-.word-reveal {
-  display: inline-block;
-  overflow: hidden;
-  vertical-align: bottom;
-}
-.word-reveal > span {
-  display: inline-block;
-  transform: translateY(105%);
-  animation: word-rise 900ms var(--ease-out) forwards;
-  animation-delay: var(--word-delay, 0ms);
-}
-@keyframes word-rise {
-  to { transform: translateY(0); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .word-reveal > span { animation: none; transform: none; }
-}
-
 /* ─── Pavement viewer drag hint ─────────────────────────────────────────── */
 .viewer-hint {
   position: absolute;
@@ -375,9 +338,6 @@ body:has(.section--dark:hover) .section-nav { color: var(--color-text-dark); }
   0%, 100% { opacity: 0.4; }
   50% { opacity: 1; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .viewer-hint, .viewer-hint-dot { animation: none; opacity: 0.7; transform: none; }
-}
 
 /* ─── Photo parallax tile ───────────────────────────────────────────────── */
 .parallax-tile {
@@ -392,7 +352,4 @@ body:has(.section--dark:hover) .section-nav { color: var(--color-text-dark); }
 @keyframes spec-slide {
   from { transform: translateY(8px); opacity: 0; }
   to   { transform: translateY(0);   opacity: 1; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .spec-flip { animation: none; }
 }

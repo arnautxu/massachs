@@ -1,20 +1,17 @@
-import { useRef } from 'react'
-import { useElementScrollProgress } from '@/hooks/useScrollProgress'
+import { useEffect, useRef } from 'react'
 
 interface ScrollMarqueeProps {
   text: string
-  /** number of repetitions in the band (so the line is wide enough to translate) */
   repeats?: number
-  /** translate-X range driven by scroll, in viewport-width units. e.g. 0.6 = ±60vw */
+  /** translate-X range in vw units driven by element scroll position */
   range?: number
   className?: string
-  tone?: 'light' | 'dark' | 'mid'
   bgClass?: 'section--light' | 'section--mid' | 'section--dark'
 }
 
 /**
- * A massive horizontal text band that translates based on the section's
- * vertical scroll position through the viewport.
+ * Scroll-driven horizontal marquee. Uses a RAF loop + lerp to bypass React
+ * state — no re-renders on scroll, silky direct style mutation.
  */
 export function ScrollMarquee({
   text,
@@ -23,21 +20,45 @@ export function ScrollMarquee({
   className,
   bgClass = 'section--light',
 }: ScrollMarqueeProps) {
-  const ref = useRef<HTMLDivElement>(null)
-  const p = useElementScrollProgress(ref) // -1 → 1
-  const translatePct = -p * range * 100 // in vw
+  const containerRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
   const items = Array.from({ length: repeats }, (_, i) => i)
+
+  useEffect(() => {
+    const container = containerRef.current
+    const track = trackRef.current
+    if (!container || !track) return
+
+    let current = 0    // lerped position (vw equivalent)
+    let target = 0     // raw computed position
+    let rafId: number
+
+    const computeTarget = () => {
+      const rect = container.getBoundingClientRect()
+      const vh = window.innerHeight || 1
+      const mid = rect.top + rect.height / 2
+      const norm = Math.max(-1, Math.min(1, (mid - vh / 2) / (vh / 2 + rect.height / 2)))
+      return -norm * range * 100   // vw
+    }
+
+    const tick = () => {
+      target = computeTarget()
+      current += (target - current) * 0.072   // lerp — controls inertia drag
+      track.style.transform = `translate3d(${current}vw, 0, 0)`
+      rafId = requestAnimationFrame(tick)
+    }
+
+    rafId = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(rafId)
+  }, [range])
 
   return (
     <div
-      ref={ref}
+      ref={containerRef}
       className={`scroll-marquee ${bgClass} ${className ?? ''}`}
       aria-hidden="true"
     >
-      <div
-        className="scroll-marquee-track"
-        style={{ transform: `translate3d(${translatePct}vw, 0, 0)` }}
-      >
+      <div ref={trackRef} className="scroll-marquee-track">
         {items.map((i) => (
           <span key={i} className="scroll-marquee-item t-display-xl">
             {text}
@@ -50,8 +71,8 @@ export function ScrollMarquee({
 }
 
 /**
- * A continuously auto-scrolling marquee (CSS keyframe).
- * Used for the hero ticker and contact footer band.
+ * Continuously auto-scrolling marquee (CSS keyframe, already smooth).
+ * Used for the contact footer band.
  */
 export function AutoMarquee({
   items,
@@ -65,7 +86,6 @@ export function AutoMarquee({
   className?: string
 }) {
   const dur = speed === 'slow' ? '60s' : speed === 'mid' ? '36s' : '20s'
-  // Repeat the items so the loop is seamless
   const repeated = [...items, ...items, ...items, ...items]
   return (
     <div

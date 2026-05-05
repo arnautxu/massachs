@@ -9,10 +9,6 @@ export function useCountUp(target: number, active: boolean, duration = 1400): nu
 
   useEffect(() => {
     if (!active) return
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setValue(target)
-      return
-    }
     let raf = 0
     const start = performance.now()
     const tick = (now: number) => {

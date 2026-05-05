@@ -1,188 +1,253 @@
-import { useRef } from 'react'
 import { useInView } from '@/hooks/useInView'
-import { useElementScrollProgress } from '@/hooks/useScrollProgress'
-import { AutoMarquee } from '@/components/Marquee'
-import CountUp from '@/components/CountUp'
 
-const TICKER_ITEMS = [
-  'Girona',
-  'Pedrera pròpia · La Garrotxa',
-  '4 generacions',
-  'Sauló natural',
-  'Certificacions ISO',
-  'Des de 1957',
-  'Catàleg de 5 productes',
-  'Sense pigments artificials',
-]
-
-function Word({ text, delay }: { text: string; delay: number }) {
+function HeroLine({
+  children,
+  delay,
+  accent,
+}: {
+  children: React.ReactNode
+  delay: number
+  accent?: boolean
+}) {
   return (
-    <span className="word-reveal" style={{ marginRight: '0.18em' }}>
-      <span style={{ ['--word-delay' as never]: `${delay}ms` }}>{text}</span>
+    <span className="hero-line-wrap">
+      <span
+        className="hero-line-inner"
+        style={{
+          ['--line-delay' as never]: `${delay}ms`,
+          color: accent ? 'var(--color-accent)' : undefined,
+        }}
+      >
+        {children}
+      </span>
     </span>
+  )
+}
+
+function MetaBlock({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="hero-meta-block">
+      <span className="t-micro text-muted-light">{label}</span>
+      <span className="hero-meta-value t-mono-num">{value}</span>
+    </div>
   )
 }
 
 export default function Hero() {
   const [ref, inView] = useInView<HTMLElement>({ threshold: 0.05 })
-  const heroRef = useRef<HTMLDivElement>(null)
-  const p = useElementScrollProgress(heroRef) // -1..1
-  const lift = -Math.max(0, p) * 60 // px upward as user scrolls past
 
   return (
     <section
       id="hero"
       ref={ref}
-      className="section section--light"
-      data-reveal
-      data-revealed={inView}
-      style={{
-        minHeight: '100dvh',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 0,
-        paddingTop: 0,
-      }}
+      className="section--light"
+      style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}
       aria-label="Introducció"
     >
-      {/* Top ticker (auto-marquee) */}
-      <div className="hero-ticker">
-        <AutoMarquee items={TICKER_ITEMS} speed="slow" tone="muted" />
+      {/* Top identity bar */}
+      <div className="hero-topbar">
+        <span className="t-micro">Massachs · Paviments naturals</span>
+        <span className="t-micro text-muted-light">Girona · Catalunya · Est.&nbsp;1957</span>
       </div>
 
-      {/* Top metadata strip */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'baseline',
-          gap: 20,
-          flexWrap: 'wrap',
-          paddingTop: 32,
-          paddingBottom: 16,
-        }}
-      >
-        <div className="t-micro">Massachs · Girona · 41.97°N 2.82°E</div>
-        <div className="t-micro text-muted-light">Paviments naturals · 5 productes</div>
-      </div>
-
-      {/* Main grid (flex-grow) */}
-      <div
-        ref={heroRef}
-        style={{
-          flex: 1,
-          display: 'grid',
-          gridTemplateColumns: 'minmax(0, 1fr) auto',
-          gap: 40,
-          alignItems: 'end',
-          paddingBlock: 24,
-          transform: `translate3d(0, ${lift}px, 0)`,
-          willChange: 'transform',
-        }}
-      >
-        <div>
-          <h1 className="t-display-xl" style={{ marginBottom: 24 }}>
-            <span style={{ display: 'block' }}>
-              <Word text="Paviments" delay={120} />
-            </span>
-            <span style={{ display: 'block', color: 'var(--color-accent)' }}>
-              <Word text="de" delay={260} />
-              <Word text="la" delay={340} />
-              <Word text="terra" delay={420} />
-            </span>
-            <span style={{ display: 'block' }}>
-              <Word text="de" delay={560} />
-              <Word text="Girona." delay={640} />
-            </span>
+      {/* Main body */}
+      <div className="hero-body">
+        {/* Left: headline + body + CTA */}
+        <div className="hero-left">
+          <h1 className="hero-headline" aria-label="Sauló de la Garrotxa">
+            <HeroLine delay={60} accent>Sauló</HeroLine>
+            <HeroLine delay={200}>de la</HeroLine>
+            <HeroLine delay={340}>Garrotxa.</HeroLine>
           </h1>
+
           <p
-            data-stagger="3"
+            className="t-body-lg text-muted-light hero-sub"
             data-reveal
             data-revealed={inView}
-            className="t-body-lg text-muted-light"
-            style={{ maxWidth: '52ch' }}
+            style={{ transitionDelay: '540ms' }}
           >
             Sauló natural, conglomerats certificats i llambordes prefabricades.
-            Material extret de les nostres pedreres a la Garrotxa, processat per
-            quatre generacions de la mateixa família.
+            Sense pigments. Extret de les nostres pedreres per quatre generacions
+            de la mateixa família.
           </p>
+
+          <a
+            href="#contact"
+            className="hero-cta"
+            data-reveal
+            data-revealed={inView}
+            style={{ transitionDelay: '680ms' }}
+          >
+            <span className="t-micro">Demana una mostra</span>
+            <span className="hero-cta-arrow" aria-hidden="true">→</span>
+          </a>
         </div>
 
-        {/* Side metadata column */}
+        {/* Vertical divider */}
+        <div className="hero-divider" aria-hidden="true" />
+
+        {/* Right: metadata */}
         <aside
-          data-stagger="4"
+          className="hero-meta"
+          aria-label="Dades de referència"
           data-reveal
           data-revealed={inView}
-          className="hero-side"
-          style={{
-            display: 'grid',
-            gap: 28,
-            minWidth: 180,
-            alignSelf: 'end',
-            paddingBottom: 8,
-          }}
+          style={{ transitionDelay: '300ms' }}
         >
-          <Stat label="Any de fundació" value={1957} animated />
-          <Stat label="Generació" value={4} format={(n) => String(n).padStart(2, '0')} animated />
-          <Stat label="Productes" value={5} format={(n) => String(n).padStart(2, '0')} animated />
-          <Stat label="Pedrera" valueText="La Garrotxa" />
+          <MetaBlock label="Coordenades" value="41.97°N · 2.82°E" />
+          <MetaBlock label="Fundació" value="1957" />
+          <MetaBlock label="Generació" value="IV" />
+          <MetaBlock label="Productes" value="05" />
+          <MetaBlock label="Pedrera" value="La Garrotxa" />
         </aside>
       </div>
 
-      {/* Bottom: hairline + scroll cue */}
-      <div style={{ paddingBlock: 20 }}>
-        <hr className="hr-light" />
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingTop: 20,
-            gap: 20,
-          }}
-        >
-          <span className="t-micro text-muted-light">
-            ↓ Mostra interactiva a continuació
-          </span>
-          <span className="t-micro text-muted-light scroll-cue">Scroll</span>
-        </div>
+      {/* Bottom scroll cue */}
+      <div className="hero-bottom">
+        <span className="t-micro text-muted-light">↓ Mostra interactiva</span>
+        <span className="t-micro text-muted-light scroll-cue">Scroll</span>
       </div>
 
       <style>{`
-        @media (max-width: 720px) {
-          .hero-side { display: none !important; }
+        .hero-topbar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 18px clamp(20px, 5vw, 80px);
+          border-bottom: 1px solid var(--line-on-light);
+          flex-shrink: 0;
+        }
+        .hero-body {
+          flex: 1;
+          display: grid;
+          grid-template-columns: 1fr 1px clamp(200px, 22vw, 300px);
+          padding-inline: clamp(20px, 5vw, 80px);
+          padding-top: clamp(48px, 7vw, 88px);
+          padding-bottom: clamp(32px, 5vw, 64px);
+          align-items: start;
+        }
+        .hero-left {
+          padding-right: clamp(32px, 5vw, 72px);
+          display: flex;
+          flex-direction: column;
+          gap: 40px;
+          align-items: flex-start;
+        }
+        .hero-divider {
+          background: var(--line-on-light);
+          align-self: stretch;
+        }
+        .hero-meta {
+          padding-left: clamp(24px, 4vw, 52px);
+          display: flex;
+          flex-direction: column;
+        }
+        .hero-meta-block {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          padding: 20px 0;
+          border-bottom: 1px solid var(--line-on-light);
+        }
+        .hero-meta-block:first-child { padding-top: 0; }
+        .hero-meta-value {
+          font-family: var(--font-display);
+          font-weight: 800;
+          font-size: clamp(1.1rem, 2.2vw, 1.9rem);
+          letter-spacing: -0.01em;
+          text-transform: uppercase;
+          line-height: 1;
+          color: var(--color-text-light);
+        }
+
+        /* Headline clip-reveal per line */
+        .hero-headline {
+          font-family: var(--font-display);
+          font-weight: 900;
+          line-height: 0.86;
+          letter-spacing: -0.032em;
+          text-transform: uppercase;
+          display: flex;
+          flex-direction: column;
+          margin: 0;
+        }
+        .hero-line-wrap {
+          display: block;
+          overflow: hidden;
+        }
+        .hero-line-inner {
+          display: block;
+          font-size: clamp(5.5rem, 15.5vw, 13rem);
+          transform: translateY(108%);
+          animation: hero-line-rise 820ms var(--ease-out) forwards;
+          animation-delay: var(--line-delay, 0ms);
+        }
+        @keyframes hero-line-rise {
+          to { transform: translateY(0); }
+        }
+
+        /* CTA button */
+        .hero-cta {
+          display: inline-flex;
+          align-items: center;
+          gap: 14px;
+          padding: 17px 30px;
+          background: var(--color-text-light);
+          color: var(--color-bg-light);
+          text-decoration: none;
+          cursor: pointer;
+          transition: transform 160ms var(--ease-out), background 200ms var(--ease-out);
+          flex-shrink: 0;
+        }
+        .hero-cta:hover { background: var(--color-accent); }
+        .hero-cta:active { transform: scale(0.97); }
+        .hero-cta-arrow {
+          display: inline-block;
+          font-size: 1rem;
+          transition: transform 220ms var(--ease-out);
+          letter-spacing: 0;
+        }
+        .hero-cta:hover .hero-cta-arrow { transform: translateX(5px); }
+
+        .hero-sub { max-width: 52ch; }
+
+        .hero-bottom {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 18px clamp(20px, 5vw, 80px);
+          border-top: 1px solid var(--line-on-light);
+          flex-shrink: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+          .hero-body {
+            grid-template-columns: 1fr;
+            gap: 44px;
+          }
+          .hero-divider { display: none; }
+          .hero-meta {
+            padding-left: 0;
+            flex-direction: row;
+            flex-wrap: wrap;
+            border-top: 1px solid var(--line-on-light);
+          }
+          .hero-meta-block {
+            flex: 1 0 120px;
+            border-bottom: none;
+            padding: 16px 20px 16px 0;
+          }
+          .hero-meta-block:first-child { padding-top: 16px; }
+          .hero-meta-value { font-size: clamp(1rem, 3vw, 1.4rem); }
+          .hero-line-inner { font-size: clamp(4.5rem, 14vw, 8rem); }
+        }
+        @media (max-width: 540px) {
+          .hero-meta { display: none; }
+          .hero-line-inner { font-size: clamp(3.8rem, 18vw, 7rem); }
+          .hero-left { gap: 28px; }
         }
       `}</style>
     </section>
-  )
-}
-
-function Stat({
-  label,
-  value,
-  valueText,
-  format,
-  animated,
-}: {
-  label: string
-  value?: number
-  valueText?: string
-  format?: (n: number) => string
-  animated?: boolean
-}) {
-  return (
-    <div>
-      <div className="t-micro text-muted-light" style={{ marginBottom: 4 }}>{label}</div>
-      <div
-        className="t-display-m t-mono-num"
-        style={{ color: 'var(--color-text-light)' }}
-      >
-        {animated && value !== undefined ? (
-          <CountUp value={value} duration={1600} format={format} />
-        ) : (
-          valueText ?? (value !== undefined ? (format ? format(value) : value) : '')
-        )}
-      </div>
-    </div>
   )
 }

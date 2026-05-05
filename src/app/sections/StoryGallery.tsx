@@ -1,6 +1,5 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useInView } from '@/hooks/useInView'
-import { useElementScrollProgress } from '@/hooks/useScrollProgress'
 import CountUp from '@/components/CountUp'
 
 /* Unsplash photo IDs — natural materials, paths, architecture, gardens */
@@ -34,13 +33,35 @@ function unsplashUrl(id: string, w: number, h: number): string {
 function ParallaxTile({
   id, caption, w, h, areaIndex,
 }: { id: string; caption: string; w: number; h: number; areaIndex: number }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const p = useElementScrollProgress(ref) // -1..1
-  const translate = -p * 24 // px
+  const figRef = useRef<HTMLElement>(null)
+  const innerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const fig = figRef.current
+    const inner = innerRef.current
+    if (!fig || !inner) return
+
+    let current = 0
+    let rafId: number
+
+    const tick = () => {
+      const rect = fig.getBoundingClientRect()
+      const vh = window.innerHeight || 1
+      const mid = rect.top + rect.height / 2
+      const norm = Math.max(-1, Math.min(1, (mid - vh / 2) / (vh / 2 + rect.height / 2)))
+      const target = -norm * 24
+      current += (target - current) * 0.1
+      inner.style.transform = `translate3d(0, ${current}px, 0)`
+      rafId = requestAnimationFrame(tick)
+    }
+
+    rafId = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(rafId)
+  }, [])
 
   return (
     <figure
-      ref={ref}
+      ref={figRef}
       className="tile-wrap"
       style={{
         gridArea: `t${areaIndex + 1}`,
@@ -48,12 +69,9 @@ function ParallaxTile({
       }}
     >
       <div
+        ref={innerRef}
         className="parallax-tile"
-        style={{
-          width: '100%',
-          height: '100%',
-          transform: `translate3d(0, ${translate}px, 0)`,
-        }}
+        style={{ width: '100%', height: '100%' }}
       >
         <img
           src={unsplashUrl(id, w, h)}
