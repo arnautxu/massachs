@@ -1,5 +1,14 @@
 import { useInView } from '@/hooks/useInView'
+import { useCountUp } from '@/hooks/useCountUp'
 import type { Product } from '@/types/product'
+
+function SlopeCell({ slope, active }: { slope: Product['technical']['max_slope_pct']; active: boolean }) {
+  const numeric = typeof slope === 'number' ? slope : 0
+  const v = useCountUp(numeric, active && numeric > 0, 1300)
+  if (!slope || slope === '_pending') return <>—</>
+  if (typeof slope === 'string') return <>{slope}</>
+  return <>{Math.round(v)}%</>
+}
 
 interface Props {
   products: Product[]
@@ -8,11 +17,6 @@ interface Props {
 function fmtDrainage(d: Product['technical']['drainage']): string {
   if (!d || d === '_pending') return '—'
   return typeof d === 'string' ? d.split('.')[0].trim() : '—'
-}
-
-function fmtSlope(s: Product['technical']['max_slope_pct']): string {
-  if (!s || s === '_pending') return '—'
-  return typeof s === 'number' ? `${s}%` : String(s)
 }
 
 function fmtCerts(c: string[]): string {
@@ -35,6 +39,7 @@ export default function TechnicalWall({ products }: Props) {
 
   return (
     <section
+      id="tech"
       ref={ref}
       className="section section--mid"
       data-reveal
@@ -66,7 +71,7 @@ export default function TechnicalWall({ products }: Props) {
               <tr key={p.id} data-stagger={Math.min(i + 1, 5)} data-reveal data-revealed={inView}>
                 <td className="product-cell">{p.brand}</td>
                 <td>{fmtDrainage(p.technical.drainage)}</td>
-                <td className="t-mono-num">{fmtSlope(p.technical.max_slope_pct)}</td>
+                <td className="t-mono-num"><SlopeCell slope={p.technical.max_slope_pct} active={inView} /></td>
                 <td>{fmtMaintenance(p.technical.maintenance)}</td>
                 <td>{fmtInstall(p.technical.installation_methods)}</td>
                 <td>{fmtCerts(p.technical.certifications)}</td>

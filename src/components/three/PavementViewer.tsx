@@ -129,15 +129,40 @@ function DPRAdapter() {
   return null
 }
 
-/* ─── Camera setup ──────────────────────────────────────────────────────── */
+/* ─── Camera setup with idle auto-rotate ───────────────────────────────── */
 function CameraSetup() {
   const { camera } = useThree()
+  const controls = useRef<any>(null)
+  const lastInteraction = useRef(performance.now())
+  const [autoRotate, setAutoRotate] = useState(true)
+
   useEffect(() => {
     camera.position.set(3, 2.6, 4)
     camera.lookAt(0, 0, 0)
   }, [camera])
+
+  // Pause auto-rotate on user interaction; resume after 2.5s idle
+  useEffect(() => {
+    const c = controls.current
+    if (!c) return
+    const onStart = () => {
+      lastInteraction.current = performance.now()
+      setAutoRotate(false)
+    }
+    c.addEventListener?.('start', onStart)
+    return () => c.removeEventListener?.('start', onStart)
+  }, [])
+
+  useFrame(() => {
+    if (autoRotate) return
+    if (performance.now() - lastInteraction.current > 2500) {
+      setAutoRotate(true)
+    }
+  })
+
   return (
     <OrbitControls
+      ref={controls}
       target={[0, 0, 0]}
       enablePan={false}
       enableDamping
@@ -148,6 +173,8 @@ function CameraSetup() {
       maxDistance={9}
       rotateSpeed={0.55}
       zoomSpeed={0.7}
+      autoRotate={autoRotate}
+      autoRotateSpeed={0.45}
       makeDefault
     />
   )

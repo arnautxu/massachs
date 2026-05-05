@@ -230,3 +230,169 @@ button { font: inherit; cursor: pointer; background: none; border: 0; padding: 0
 
 /* ─── Canvas ────────────────────────────────────────────────────────────── */
 canvas { display: block; touch-action: none; }
+
+/* ─── Hero ticker ───────────────────────────────────────────────────────── */
+.hero-ticker {
+  border-block: 1px solid var(--line-on-light);
+  overflow: hidden;
+  margin-inline: calc(-1 * clamp(20px, 5vw, 80px));
+}
+
+/* ─── Auto-marquee (hero ticker, contact footer) ────────────────────────── */
+.auto-marquee {
+  overflow: hidden;
+  width: 100%;
+}
+.auto-marquee-track {
+  display: inline-flex;
+  white-space: nowrap;
+  gap: 36px;
+  padding-block: 14px;
+  animation: marquee var(--marquee-dur, 60s) linear infinite;
+  will-change: transform;
+}
+.auto-marquee-item {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+@keyframes marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-25%, 0, 0); }
+}
+
+/* ─── Scroll-driven marquee band ────────────────────────────────────────── */
+.scroll-marquee {
+  overflow: hidden;
+  padding-block: clamp(48px, 8vw, 96px);
+  position: relative;
+  border-block: 1px solid var(--line-on-light);
+}
+.scroll-marquee.section--dark { border-color: var(--line-on-dark); }
+.scroll-marquee-track {
+  display: inline-flex;
+  gap: clamp(24px, 4vw, 64px);
+  white-space: nowrap;
+  will-change: transform;
+}
+.scroll-marquee-item {
+  font-size: clamp(4rem, 14vw, 12rem);
+  line-height: 0.86;
+  letter-spacing: -0.03em;
+  color: var(--color-text-light);
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(20px, 3vw, 48px);
+}
+.scroll-marquee.section--dark .scroll-marquee-item { color: var(--color-text-dark); }
+.scroll-marquee-dot {
+  color: var(--color-accent);
+  font-size: 0.55em;
+  vertical-align: middle;
+}
+
+/* ─── Tech table row hover (cross-highlight) ────────────────────────────── */
+.tech-table tbody tr {
+  transition: background-color 200ms var(--ease-out), color 200ms var(--ease-out);
+}
+.tech-table tbody tr:hover {
+  background: oklch(20% 0.012 60 / 0.05);
+}
+.tech-table tbody tr:hover td.product-cell {
+  color: var(--color-accent);
+}
+
+/* ─── Magnetic / accent links ───────────────────────────────────────────── */
+.accent-link {
+  position: relative;
+  display: inline-block;
+  transition: color 200ms var(--ease-out);
+}
+.accent-link::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -3px;
+  height: 1px;
+  background: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 320ms var(--ease-out);
+}
+.accent-link:hover { color: var(--color-accent); }
+.accent-link:hover::after { transform: scaleX(1); }
+
+/* ─── Section nav fade on hero hover ────────────────────────────────────── */
+.section-nav { color: var(--color-text-light); }
+.section--dark + * .section-nav,
+body:has(.section--dark:hover) .section-nav { color: var(--color-text-dark); }
+
+/* ─── Word reveal (Hero) ────────────────────────────────────────────────── */
+.word-reveal {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+.word-reveal > span {
+  display: inline-block;
+  transform: translateY(105%);
+  animation: word-rise 900ms var(--ease-out) forwards;
+  animation-delay: var(--word-delay, 0ms);
+}
+@keyframes word-rise {
+  to { transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .word-reveal > span { animation: none; transform: none; }
+}
+
+/* ─── Pavement viewer drag hint ─────────────────────────────────────────── */
+.viewer-hint {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--color-bg-light);
+  border: 1px solid var(--line-on-light);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  animation: hint-pulse 4.4s 800ms ease-in-out infinite;
+}
+@keyframes hint-pulse {
+  0%, 100% { opacity: 0; transform: translateY(4px); }
+  10%, 50% { opacity: 1; transform: translateY(0); }
+  60% { opacity: 0; transform: translateY(0); }
+}
+.viewer-hint-dot {
+  width: 6px; height: 6px;
+  background: var(--color-accent);
+  animation: dot-blink 1.4s ease-in-out infinite;
+}
+@keyframes dot-blink {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .viewer-hint, .viewer-hint-dot { animation: none; opacity: 0.7; transform: none; }
+}
+
+/* ─── Photo parallax tile ───────────────────────────────────────────────── */
+.parallax-tile {
+  will-change: transform;
+}
+
+/* ─── Spec value slide on change ────────────────────────────────────────── */
+.spec-flip {
+  display: block;
+  animation: spec-slide 360ms var(--ease-out) both;
+}
+@keyframes spec-slide {
+  from { transform: translateY(8px); opacity: 0; }
+  to   { transform: translateY(0);   opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spec-flip { animation: none; }
+}

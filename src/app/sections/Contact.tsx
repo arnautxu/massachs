@@ -1,4 +1,16 @@
 import { useInView } from '@/hooks/useInView'
+import { AutoMarquee } from '@/components/Marquee'
+
+const FOOTER_TICKER = [
+  'Massachs — Des de 1957',
+  'Paviments naturals',
+  'Sauló de la Garrotxa',
+  'Girona, Catalunya',
+  '★',
+  'massachs.cat',
+  'info@massachs.cat',
+  '★',
+]
 
 export default function Contact() {
   const [ref, inView] = useInView<HTMLElement>()
@@ -6,12 +18,13 @@ export default function Contact() {
 
   return (
     <section
+      id="contact"
       ref={ref}
       className="section section--dark"
       data-reveal
       data-revealed={inView}
       aria-label="Contacte"
-      style={{ paddingTop: 0, paddingBottom: 32 }}
+      style={{ paddingTop: 0, paddingBottom: 0 }}
     >
       <hr className="hr-dark" style={{ marginBottom: 80 }} />
 
@@ -41,16 +54,25 @@ export default function Contact() {
         </div>
       </div>
 
+      {/* Footer marquee strip */}
+      <div
+        style={{
+          marginTop: 96,
+          borderTop: '1px solid var(--line-on-dark)',
+          borderBottom: '1px solid var(--line-on-dark)',
+          paddingBlock: 6,
+        }}
+      >
+        <AutoMarquee items={FOOTER_TICKER} speed="mid" tone="muted" />
+      </div>
+
       {/* Footer strip */}
-      <div style={{ marginTop: 96 }}>
-        <hr className="hr-dark" style={{ marginBottom: 24 }} />
-        <div className="footer-row">
-          <span className="t-micro">Massachs — Des de 1957</span>
-          <span className="t-micro text-muted-dark">© {year} Grup Massachs · Girona</span>
-          <a className="t-micro" href="https://massachs.cat" target="_blank" rel="noreferrer">
-            massachs.cat ↗
-          </a>
-        </div>
+      <div className="footer-row" style={{ paddingBlock: 24 }}>
+        <span className="t-micro">© {year} Grup Massachs · Girona</span>
+        <span className="t-micro text-muted-dark">CIF · Política de privadesa · Avís legal</span>
+        <a className="t-micro accent-link" href="https://massachs.cat" target="_blank" rel="noreferrer">
+          massachs.cat ↗
+        </a>
       </div>
 
       <style>{`
@@ -95,14 +117,23 @@ function ContactRow({ label, value, href }: { label: string; value: string; href
     return (
       <a
         href={href}
+        className="contact-link"
         style={{
           display: 'block',
           paddingBottom: 20,
           borderBottom: '1px solid var(--line-on-dark)',
-          transition: 'color 200ms var(--ease-out), border-color 200ms var(--ease-out)',
+          transition: 'color 200ms var(--ease-out), border-color 200ms var(--ease-out), padding-left 280ms var(--ease-out)',
         }}
-        onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-accent)' }}
-        onMouseLeave={(e) => { e.currentTarget.style.color = '' }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.color = 'var(--color-accent)'
+          e.currentTarget.style.paddingLeft = '12px'
+          e.currentTarget.style.borderBottomColor = 'var(--color-accent)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.color = ''
+          e.currentTarget.style.paddingLeft = '0'
+          e.currentTarget.style.borderBottomColor = 'var(--line-on-dark)'
+        }}
       >
         {content}
       </a>

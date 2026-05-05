@@ -2,6 +2,18 @@ import { Suspense, lazy, useState } from 'react'
 import { useInView } from '@/hooks/useInView'
 import type { Product } from '@/types/product'
 
+interface FlipProps {
+  children: React.ReactNode
+  flipKey: string | number
+}
+function Flip({ children, flipKey }: FlipProps) {
+  return (
+    <span key={flipKey} className="spec-flip">
+      {children}
+    </span>
+  )
+}
+
 const PavementViewer = lazy(() => import('@/components/three/PavementViewer'))
 
 function ViewerFallback() {
@@ -33,6 +45,7 @@ export default function MaterialLab({ products }: Props) {
 
   return (
     <section
+      id="lab"
       ref={ref}
       className="section section--light"
       data-reveal
@@ -81,6 +94,10 @@ export default function MaterialLab({ products }: Props) {
               <PavementViewer colorHex={colorHex} />
             </Suspense>
             <div className="lab-corner-badge t-micro">3D · Drag</div>
+            <div className="viewer-hint">
+              <span className="viewer-hint-dot" aria-hidden="true" />
+              <span className="t-micro" style={{ fontSize: '0.65rem' }}>Drag per orbitar</span>
+            </div>
           </div>
         </div>
       </div>
@@ -100,34 +117,45 @@ export default function MaterialLab({ products }: Props) {
                     background: colorHex,
                     border: '1px solid var(--line-on-light)',
                     flexShrink: 0,
+                    transition: 'background 360ms var(--ease-out)',
                   }}
                 />
-                <span>
-                  {active.colors[0]?.name}
-                  {active.finishes[0] && ` · ${active.finishes[0].name}`}
-                </span>
+                <Flip flipKey={active.id + ':color'}>
+                  <span>
+                    {active.colors[0]?.name}
+                    {active.finishes[0] && ` · ${active.finishes[0].name}`}
+                  </span>
+                </Flip>
               </div>
             </div>
 
             <div>
               <div className="t-micro text-muted-light" style={{ marginBottom: 6 }}>Granulometria</div>
               <div className="t-body t-mono-num">
-                {(active.granulometries.filter((g) => !g._pending && g.size !== '_pending')[0]?.size) || '—'}
+                <Flip flipKey={active.id + ':gran'}>
+                  {(active.granulometries.filter((g) => !g._pending && g.size !== '_pending')[0]?.size) || '—'}
+                </Flip>
               </div>
             </div>
 
             <div>
               <div className="t-micro text-muted-light" style={{ marginBottom: 6 }}>Drenatge</div>
               <div className="t-body">
-                {typeof active.technical.drainage === 'string'
-                  ? active.technical.drainage.split('.')[0]
-                  : '—'}
+                <Flip flipKey={active.id + ':drain'}>
+                  {typeof active.technical.drainage === 'string'
+                    ? active.technical.drainage.split('.')[0]
+                    : '—'}
+                </Flip>
               </div>
             </div>
 
             <div className="lab-diff">
               <div className="t-micro text-muted-light" style={{ marginBottom: 6 }}>Diferencial</div>
-              <div className="t-body">{active.key_differentiator}</div>
+              <div className="t-body">
+                <Flip flipKey={active.id + ':diff'}>
+                  {active.key_differentiator}
+                </Flip>
+              </div>
             </div>
           </div>
         </div>
