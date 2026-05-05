@@ -162,7 +162,8 @@ export default function Hero() {
           color: var(--color-text-light);
         }
 
-        /* Headline clip-reveal per line */
+        /* Headline staggered reveal — opacity+rise avoids overflow:hidden
+           clipping accent marks (ó, à, etc.) with tight line-height */
         .hero-headline {
           font-family: var(--font-display);
           font-weight: 900;
@@ -175,17 +176,17 @@ export default function Hero() {
         }
         .hero-line-wrap {
           display: block;
-          overflow: hidden;
         }
         .hero-line-inner {
           display: block;
           font-size: clamp(5.5rem, 15.5vw, 13rem);
-          transform: translateY(108%);
-          animation: hero-line-rise 820ms var(--ease-out) forwards;
+          opacity: 0;
+          transform: translateY(0.25em);
+          animation: hero-line-rise 780ms var(--ease-out) forwards;
           animation-delay: var(--line-delay, 0ms);
         }
         @keyframes hero-line-rise {
-          to { transform: translateY(0); }
+          to { opacity: 1; transform: translateY(0); }
         }
 
         /* CTA button */
