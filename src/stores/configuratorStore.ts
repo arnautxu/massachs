@@ -6,12 +6,11 @@ interface ConfiguratorStore {
   // Step 1
   scene: SceneId | null
   setScene: (scene: SceneId) => void
+  selectScene: (scene: SceneId) => void  // sets scene + advances to step 2
 
   // Step 2
   useType: UseType | null
   setUseType: (useType: UseType) => void
-
-  // Step 3
   productId: string | null
   setProductId: (productId: string) => void
   finishIndex: number
@@ -23,6 +22,15 @@ interface ConfiguratorStore {
   step: 1 | 2 | 3 | 4
   setStep: (step: 1 | 2 | 3 | 4) => void
   goToStep: (step: 1 | 2 | 3 | 4) => void
+
+  // Bulk restore (for URL sharing)
+  restoreState: (partial: {
+    scene?: SceneId
+    productId?: string
+    finishIndex?: number
+    granulometryIndex?: number
+    step?: 1 | 2 | 3 | 4
+  }) => void
 
   // Reset
   reset: () => void
@@ -49,6 +57,9 @@ export const useConfiguratorStore = create<ConfiguratorStore>()(
       setScene: (scene) =>
         set({ scene, lastUpdated: Date.now() }),
 
+      selectScene: (scene) =>
+        set({ scene, productId: null, finishIndex: 0, granulometryIndex: 0, step: 2, lastUpdated: Date.now() }),
+
       setUseType: (useType) =>
         set({ useType, lastUpdated: Date.now() }),
 
@@ -66,6 +77,9 @@ export const useConfiguratorStore = create<ConfiguratorStore>()(
 
       goToStep: (step) =>
         set({ step }),
+
+      restoreState: (partial) =>
+        set({ ...partial, lastUpdated: Date.now() }),
 
       reset: () =>
         set({ ...initialState, lastUpdated: Date.now() }),

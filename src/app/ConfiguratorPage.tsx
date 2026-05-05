@@ -1,40 +1,215 @@
-import { Suspense, lazy, useState } from 'react'
+import { useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useConfiguratorStore } from '@/stores/configuratorStore'
+import { useProducts } from '@/hooks/useProducts'
+import { parseShareUrl } from '@/lib/products'
+import { SCENES } from '@/types/scene'
+import type { SceneId } from '@/types/product'
+import Step1Scene from '@/components/flow/Step1Scene'
+import Step2Product from '@/components/flow/Step2Product'
+import Step3Viewer from '@/components/flow/Step3Viewer'
+import Step4Form from '@/components/flow/Step4Form'
 
-const DummyScene = lazy(() => import('@/components/three/DummyScene'))
+/* ── Header ──────────────────────────────────────────────────────────────── */
+function ConfiguratorHeader() {
+  const step = useConfiguratorStore((s) => s.step)
+  const scene = useConfiguratorStore((s) => s.scene)
+  const productId = useConfiguratorStore((s) => s.productId)
+  const goToStep = useConfiguratorStore((s) => s.goToStep)
+  const reset = useConfiguratorStore((s) => s.reset)
 
-const PRODUCT_COLORS: Record<string, string> = {
-  'terra-solida': '#B8956A',
-  'saulo-solid': '#C4A87A',
-  'saulo-conglomerat': '#B8A882',
-  'saulo-parc': '#C8B88E',
-  'terrapref': '#A8906A',
+  const sceneDef = SCENES.find((sc) => sc.id === scene)
+
+  const stepTitles: Record<number, string> = {
+    1: 'Configurador de paviments',
+    2: sceneDef ? sceneDef.label : 'Selecciona el paviment',
+    3: productId ? '' : 'Visualització 3D',
+    4: 'Sol·licitar mostra',
+  }
+
+  function handleBack() {
+    if (step === 2) { reset(); goToStep(1) }
+    else if (step === 3) goToStep(2)
+    else if (step === 4) goToStep(3)
+  }
+
+  const showBack = step > 1
+
+  return (
+    <header
+      className="panel-glass"
+      style={{
+        position: 'relative',
+        zIndex: 20,
+        height: 56,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 20px',
+        gap: 16,
+        flexShrink: 0,
+      }}
+      role="banner"
+    >
+      {/* Left: back + brand */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+        {showBack && (
+          <button
+            onClick={handleBack}
+            aria-label="Tornar al pas anterior"
+            style={{
+              width: 30,
+              height: 30,
+              borderRadius: 'var(--radius)',
+              border: '1px solid var(--color-border)',
+              backgroundColor: 'transparent',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: 'var(--color-text-muted)',
+              flexShrink: 0,
+              transition: 'color 150ms, border-color 150ms',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-text)'; e.currentTarget.style.borderColor = 'var(--color-border-2)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-muted)'; e.currentTarget.style.borderColor = 'var(--color-border)' }}
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        )}
+        <button
+          onClick={() => { reset(); goToStep(1) }}
+          aria-label="Inici del configurador Massachs"
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: '1rem',
+            fontWeight: 800,
+            letterSpacing: '0.08em',
+            color: 'var(--color-text)',
+            textTransform: 'uppercase',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '4px 0',
+          }}
+        >
+          MASSACHS
+        </button>
+      </div>
+
+      {/* Center: step title */}
+      <div
+        style={{
+          flex: 1,
+          textAlign: 'center',
+          overflow: 'hidden',
+        }}
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: '0.78rem',
+            color: 'var(--color-text-muted)',
+            letterSpacing: '0.06em',
+            textTransform: 'uppercase',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          {stepTitles[step]}
+        </p>
+      </div>
+
+      {/* Right: step indicators */}
+      <nav aria-label="Passos del configurador" style={{ flexShrink: 0 }}>
+        <ol
+          style={{
+            display: 'flex',
+            gap: 6,
+            listStyle: 'none',
+            margin: 0,
+            padding: 0,
+          }}
+        >
+          {([1, 2, 3, 4] as const).map((s) => {
+            const isActive = step === s
+            const isPast = step > s
+            return (
+              <li key={s}>
+                <button
+                  onClick={() => {
+                    if (s < step) goToStep(s)
+                  }}
+                  disabled={s > step}
+                  aria-current={isActive ? 'step' : undefined}
+                  aria-label={`Pas ${s}`}
+                  style={{
+                    width: 26,
+                    height: 26,
+                    borderRadius: '50%',
+                    border: '1.5px solid',
+                    borderColor: isActive
+                      ? 'var(--color-accent)'
+                      : isPast
+                      ? 'var(--color-accent-3)'
+                      : 'var(--color-border)',
+                    backgroundColor: isActive
+                      ? 'var(--color-accent)'
+                      : isPast
+                      ? 'transparent'
+                      : 'transparent',
+                    color: isActive
+                      ? '#fff'
+                      : isPast
+                      ? 'var(--color-accent-3)'
+                      : 'var(--color-text-muted)',
+                    fontFamily: 'var(--font-display)',
+                    fontWeight: 700,
+                    fontSize: '0.75rem',
+                    cursor: s < step ? 'pointer' : 'default',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'background-color 200ms var(--ease-out), border-color 200ms var(--ease-out), color 200ms var(--ease-out)',
+                  }}
+                >
+                  {s}
+                </button>
+              </li>
+            )
+          })}
+        </ol>
+      </nav>
+    </header>
+  )
 }
 
-function SceneLoader() {
+/* ── Products loader skeleton ─────────────────────────────────────────────── */
+function ProductsSkeleton() {
   return (
     <div
       style={{
-        position: 'absolute',
-        inset: 0,
+        flex: 1,
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: '16px',
-        backgroundColor: 'var(--color-surface-2)',
         color: 'var(--color-text-muted)',
         fontFamily: 'var(--font-body)',
         fontSize: '0.875rem',
-        letterSpacing: '0.05em',
+        gap: 12,
       }}
       role="status"
-      aria-label="Carregant escena 3D"
+      aria-label="Carregant catàleg de productes"
     >
       <div
         style={{
-          width: 40,
-          height: 40,
+          width: 20,
+          height: 20,
           borderRadius: '50%',
           border: '2px solid var(--color-border)',
           borderTopColor: 'var(--color-accent)',
@@ -42,316 +217,93 @@ function SceneLoader() {
         }}
       />
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-      Carregant escena...
+      Carregant catàleg...
     </div>
   )
 }
 
+/* ── URL restoration ──────────────────────────────────────────────────────── */
+function useUrlRestore() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const restoreState = useConfiguratorStore((s) => s.restoreState)
+
+  useEffect(() => {
+    const parsed = parseShareUrl(searchParams)
+    if (!parsed) return
+
+    // Validate scene ID
+    const validSceneIds = SCENES.map((sc) => sc.id)
+    if (!validSceneIds.includes(parsed.scene as SceneId)) return
+
+    if ('productId' in parsed) {
+      restoreState({
+        scene: parsed.scene as SceneId,
+        productId: parsed.productId,
+        finishIndex: parsed.finishIndex,
+        granulometryIndex: parsed.granulometryIndex,
+        step: 3,
+      })
+    } else {
+      restoreState({
+        scene: parsed.scene as SceneId,
+        step: 2,
+      })
+    }
+
+    // Clear params from URL after restoring (keeps URL clean)
+    setSearchParams({}, { replace: true })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+}
+
+/* ── Main page ───────────────────────────────────────────────────────────── */
 export default function ConfiguratorPage() {
-  const productId = useConfiguratorStore((s) => s.productId)
+  useUrlRestore()
+
   const step = useConfiguratorStore((s) => s.step)
-  const setStep = useConfiguratorStore((s) => s.setStep)
-  const setProductId = useConfiguratorStore((s) => s.setProductId)
-
-  const [showScene] = useState(true)
-  const activeColor = productId
-    ? (PRODUCT_COLORS[productId] ?? '#C4A87A')
-    : '#C4A87A'
-
-  const products = [
-    { id: 'terra-solida', label: 'Terra Sòlida' },
-    { id: 'saulo-solid', label: 'Sauló Sòlid' },
-    { id: 'saulo-conglomerat', label: 'Sauló Conglomerat' },
-    { id: 'saulo-parc', label: 'Sauló Parc' },
-    { id: 'terrapref', label: 'TerraPref' },
-  ]
+  const { products, loading } = useProducts()
 
   return (
     <div
       style={{
-        position: 'relative',
-        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
         height: '100dvh',
         overflow: 'hidden',
         backgroundColor: 'var(--color-bg)',
       }}
     >
-      {/* ── Canvas 3D ── */}
-      {showScene && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-          }}
-        >
-          <Suspense fallback={<SceneLoader />}>
-            <DummyScene productColor={activeColor} />
-          </Suspense>
-        </div>
-      )}
+      <ConfiguratorHeader />
 
-      {/* ── Header ── */}
-      <header
-        className="panel-glass"
+      {/* ── Step content ── */}
+      <main
         style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 56,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 24px',
-          zIndex: 10,
-        }}
-        role="banner"
-      >
-        <div
-          style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '1.25rem',
-            fontWeight: 800,
-            letterSpacing: '0.06em',
-            color: 'var(--color-text)',
-            textTransform: 'uppercase',
-          }}
-          aria-label="Grup Massachs"
-        >
-          MASSACHS
-        </div>
-
-        <div
-          style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: '0.75rem',
-            color: 'var(--color-text-muted)',
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-          }}
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          {productId
-            ? products.find((p) => p.id === productId)?.label
-            : 'Configurador de paviments'}
-        </div>
-
-        <nav aria-label="Passos del configurador">
-          <ol
-            style={{
-              display: 'flex',
-              gap: 8,
-              listStyle: 'none',
-              margin: 0,
-              padding: 0,
-            }}
-          >
-            {[1, 2, 3, 4].map((s) => (
-              <li key={s}>
-                <button
-                  onClick={() => setStep(s as 1 | 2 | 3 | 4)}
-                  aria-current={step === s ? 'step' : undefined}
-                  aria-label={`Pas ${s}`}
-                  style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: '50%',
-                    border: '1.5px solid',
-                    borderColor:
-                      step === s
-                        ? 'var(--color-accent)'
-                        : 'var(--color-border)',
-                    backgroundColor:
-                      step === s
-                        ? 'var(--color-accent)'
-                        : 'transparent',
-                    color: step === s ? '#fff' : 'var(--color-text-muted)',
-                    fontFamily: 'var(--font-display)',
-                    fontWeight: 700,
-                    fontSize: '0.8rem',
-                    cursor: 'pointer',
-                    transition: `background-color 200ms var(--ease-out), border-color 200ms var(--ease-out), color 200ms var(--ease-out)`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {s}
-                </button>
-              </li>
-            ))}
-          </ol>
-        </nav>
-      </header>
-
-      {/* ── Left panel: product selector (demo for task 2) ── */}
-      <aside
-        className="panel-glass"
-        style={{
-          position: 'absolute',
-          top: 72,
-          left: 16,
-          bottom: 72,
-          width: 240,
-          borderRadius: 'var(--radius-lg)',
-          padding: 16,
-          zIndex: 10,
-          overflowY: 'auto',
+          flex: 1,
           display: 'flex',
           flexDirection: 'column',
-          gap: 8,
+          overflow: 'hidden',
+          position: 'relative',
+          minHeight: 0,
         }}
-        aria-label="Selector de paviment"
+        aria-label={`Pas ${step} de 4`}
       >
-        <p
-          style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '0.65rem',
-            fontWeight: 700,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            color: 'var(--color-text-muted)',
-            marginBottom: 4,
-          }}
-        >
-          Paviment
-        </p>
+        {step === 1 && <Step1Scene />}
 
-        {products.map((p) => (
-          <button
-            key={p.id}
-            onClick={() => setProductId(p.id)}
-            aria-pressed={productId === p.id}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              padding: '10px 12px',
-              borderRadius: 'var(--radius)',
-              border: '1.5px solid',
-              borderColor:
-                productId === p.id
-                  ? 'var(--color-accent)'
-                  : 'var(--color-border)',
-              backgroundColor:
-                productId === p.id
-                  ? 'var(--color-accent-bg)'
-                  : 'transparent',
-              cursor: 'pointer',
-              textAlign: 'left',
-              width: '100%',
-              transition: `all 200ms var(--ease-out)`,
-            }}
-          >
-            {/* Color swatch */}
-            <span
-              style={{
-                width: 20,
-                height: 20,
-                borderRadius: 4,
-                backgroundColor: PRODUCT_COLORS[p.id],
-                border: '1px solid var(--color-border)',
-                flexShrink: 0,
-              }}
-              aria-hidden="true"
-            />
-            <span
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '0.85rem',
-                fontWeight: productId === p.id ? 500 : 400,
-                color: productId === p.id
-                  ? 'var(--color-text)'
-                  : 'var(--color-text-2)',
-              }}
-            >
-              {p.label}
-            </span>
-          </button>
-        ))}
+        {step === 2 && (
+          loading ? <ProductsSkeleton /> : <Step2Product products={products} />
+        )}
 
-        <div
-          style={{
-            marginTop: 'auto',
-            paddingTop: 12,
-            borderTop: '1px solid var(--color-border)',
-            fontSize: '0.7rem',
-            color: 'var(--color-text-muted)',
-            fontFamily: 'var(--font-body)',
-            fontStyle: 'italic',
-          }}
-        >
-          Textura sintètica — placeholder fins a integrar KTX2
-        </div>
-      </aside>
-
-      {/* ── Bottom bar ── */}
-      <div
-        className="panel-glass"
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: 56,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 32,
-          zIndex: 10,
-          padding: '0 24px',
-        }}
-        role="navigation"
-        aria-label="Pas actual"
-      >
-        {[
-          { num: 1, label: 'On l\'aplicaràs?' },
-          { num: 2, label: 'Quin ús tindrà?' },
-          { num: 3, label: 'Configura el paviment' },
-          { num: 4, label: 'Resum i acció' },
-        ].map(({ num, label }) => (
-          <button
-            key={num}
-            onClick={() => setStep(num as 1 | 2 | 3 | 4)}
-            aria-current={step === num ? 'step' : undefined}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '4px 8px',
-              borderRadius: 'var(--radius-sm)',
-              transition: 'opacity 150ms',
-              opacity: step === num ? 1 : 0.5,
-            }}
-          >
-            <span
-              style={{
-                fontFamily: 'var(--font-display)',
-                fontWeight: 700,
-                fontSize: '0.7rem',
-                color: step === num ? 'var(--color-accent)' : 'var(--color-text-muted)',
-                letterSpacing: '0.05em',
-              }}
-            >
-              {num}
-            </span>
-            <span
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '0.75rem',
-                color: step === num ? 'var(--color-text)' : 'var(--color-text-muted)',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {label}
-            </span>
-          </button>
-        ))}
-      </div>
+        {(step === 3 || step === 4) && (
+          loading ? (
+            <ProductsSkeleton />
+          ) : (
+            <>
+              <Step3Viewer products={products} />
+              {step === 4 && <Step4Form products={products} />}
+            </>
+          )
+        )}
+      </main>
     </div>
   )
 }
