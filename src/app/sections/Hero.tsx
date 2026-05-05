@@ -43,6 +43,8 @@ export default function Hero() {
       className="section--light"
       style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}
       aria-label="Introducció"
+      data-reveal
+      data-revealed="true"
     >
       {/* Top identity bar */}
       <div className="hero-topbar">
