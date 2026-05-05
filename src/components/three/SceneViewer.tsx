@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useRef, useMemo, useState } from 'react'
-import { Canvas, useThree } from '@react-three/fiber'
+import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import {
   OrbitControls,
   Environment,
@@ -72,23 +72,81 @@ function SceneLights() {
   )
 }
 
-/* ── Camera + orbit controls ──────────────────────────────────────────────── */
-function CameraSetup({ sceneId }: { sceneId: SceneId }) {
-  const { camera } = useThree()
-  const preset = CAMERA_PRESETS[sceneId] ?? CAMERA_PRESETS['vorera-urbana']
+/* ── Camera preset positions (scene-independent, relative to centre) ──────── */
+export type CameraPreset = 'default' | 'zenith' | 'person'
 
+function getPresetVectors(
+  sceneId: SceneId,
+  preset: CameraPreset,
+): { pos: THREE.Vector3; target: THREE.Vector3 } {
+  const def = CAMERA_PRESETS[sceneId] ?? CAMERA_PRESETS['vorera-urbana']
+  if (preset === 'zenith') return {
+    pos: new THREE.Vector3(0, 18, 0.5),
+    target: new THREE.Vector3(0, 0, 0),
+  }
+  if (preset === 'person') return {
+    pos: new THREE.Vector3(0, 1.7, 5),
+    target: new THREE.Vector3(0, 0.5, 0),
+  }
+  return {
+    pos: new THREE.Vector3(...def.pos),
+    target: new THREE.Vector3(...def.target),
+  }
+}
+
+/* ── Camera + orbit controls ──────────────────────────────────────────────── */
+function CameraSetup({ sceneId, cameraPreset }: { sceneId: SceneId; cameraPreset: CameraPreset }) {
+  const { camera } = useThree()
+  const controlsRef = useRef<any>(null)
+  const sceneDef = CAMERA_PRESETS[sceneId] ?? CAMERA_PRESETS['vorera-urbana']
+
+  // Lerp targets — updated whenever preset or scene changes
+  const lerpPos    = useRef(new THREE.Vector3(...sceneDef.pos))
+  const lerpTarget = useRef(new THREE.Vector3(...sceneDef.target))
+  const lerping    = useRef(false)
+
+  // On mount: snap camera to initial position
   useEffect(() => {
-    camera.position.set(...preset.pos)
-    camera.lookAt(...preset.target)
-  }, [camera, preset])
+    const { pos, target } = getPresetVectors(sceneId, cameraPreset)
+    camera.position.copy(pos)
+    lerpPos.current.copy(pos)
+    lerpTarget.current.copy(target)
+    if (controlsRef.current) {
+      controlsRef.current.target.copy(target)
+      controlsRef.current.update()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // When preset or scene changes: start lerping
+  useEffect(() => {
+    const { pos, target } = getPresetVectors(sceneId, cameraPreset)
+    lerpPos.current.copy(pos)
+    lerpTarget.current.copy(target)
+    lerping.current = true
+  }, [sceneId, cameraPreset])
+
+  useFrame(() => {
+    if (!lerping.current || !controlsRef.current) return
+    camera.position.lerp(lerpPos.current, 0.07)
+    controlsRef.current.target.lerp(lerpTarget.current, 0.07)
+    controlsRef.current.update()
+    if (camera.position.distanceTo(lerpPos.current) < 0.02) {
+      camera.position.copy(lerpPos.current)
+      controlsRef.current.target.copy(lerpTarget.current)
+      controlsRef.current.update()
+      lerping.current = false
+    }
+  })
 
   return (
     <OrbitControls
-      target={preset.target}
+      ref={controlsRef}
+      target={sceneDef.target}
       minPolarAngle={0.15}
       maxPolarAngle={Math.PI / 2.05}
-      minDistance={3}
-      maxDistance={22}
+      minDistance={2}
+      maxDistance={26}
       enablePan
       panSpeed={0.6}
       rotateSpeed={0.55}
@@ -143,6 +201,7 @@ interface SceneContentProps {
   productId: string
   finishName: string
   colorHex: string
+  cameraPreset: CameraPreset
   glbStatus: AssetStatus
   ktx2Status: AssetStatus
   hdrStatus: AssetStatus
@@ -155,6 +214,7 @@ function SceneContent({
   sceneId,
   productId: _productId,
   colorHex,
+  cameraPreset,
   glbStatus,
   ktx2Status,
   hdrStatus,
@@ -191,7 +251,7 @@ function SceneContent({
   return (
     <>
       <SceneLights />
-      <CameraSetup sceneId={sceneId} />
+      <CameraSetup sceneId={sceneId} cameraPreset={cameraPreset} />
       <DPRAdapter />
       <PerformanceMonitor onDecline={() => {}} threshold={0.5} flipflops={3} factor={1} />
 
@@ -212,6 +272,7 @@ export interface SceneViewerProps {
   productId: string
   finishName: string
   colorHex?: string
+  cameraPreset?: CameraPreset
   className?: string
 }
 
@@ -220,6 +281,7 @@ export default function SceneViewer({
   productId,
   finishName,
   colorHex = '#C4A87A',
+  cameraPreset = 'default',
   className,
 }: SceneViewerProps) {
   const glbUrl  = `/scenes/${sceneId}.glb`
@@ -251,6 +313,7 @@ export default function SceneViewer({
           productId={productId}
           finishName={finishName}
           colorHex={colorHex}
+          cameraPreset={cameraPreset}
           glbStatus={glbStatus}
           ktx2Status={ktx2Status}
           hdrStatus={hdrStatus}

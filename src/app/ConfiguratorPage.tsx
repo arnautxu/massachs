@@ -287,20 +287,26 @@ export default function ConfiguratorPage() {
         }}
         aria-label={`Pas ${step} de 4`}
       >
-        {step === 1 && <Step1Scene />}
+        {step === 1 && (
+          <div key="s1" className="step-animate" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}>
+            <Step1Scene />
+          </div>
+        )}
 
         {step === 2 && (
-          loading ? <ProductsSkeleton /> : <Step2Product products={products} />
+          <div key="s2" className="step-animate" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}>
+            {loading ? <ProductsSkeleton /> : <Step2Product products={products} />}
+          </div>
         )}
 
         {(step === 3 || step === 4) && (
           loading ? (
             <ProductsSkeleton />
           ) : (
-            <>
+            <div key="s3" className="step-animate" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden', position: 'relative' }}>
               <Step3Viewer products={products} />
               {step === 4 && <Step4Form products={products} />}
-            </>
+            </div>
           )
         )}
       </main>

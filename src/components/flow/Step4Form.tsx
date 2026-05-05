@@ -245,6 +245,7 @@ export default function Step4Form({ products }: { products: Product[] }) {
   return (
     /* Backdrop overlay */
     <div
+      className="modal-backdrop-animate"
       style={{
         position: 'absolute',
         inset: 0,
@@ -263,7 +264,7 @@ export default function Step4Form({ products }: { products: Product[] }) {
     >
       {/* Card */}
       <div
-        className="panel-glass"
+        className="panel-glass modal-card-animate"
         style={{
           borderRadius: 'var(--radius-lg)',
           width: '100%',

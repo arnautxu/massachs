@@ -3,6 +3,7 @@ import { useConfiguratorStore } from '@/stores/configuratorStore'
 import { SCENES } from '@/types/scene'
 import { buildShareUrl } from '@/lib/products'
 import type { Product } from '@/types/product'
+import type { CameraPreset } from '@/components/three/SceneViewer'
 
 const SceneViewer = lazy(() => import('@/components/three/SceneViewer'))
 
@@ -61,7 +62,6 @@ function ShareButton({
       setCopied(true)
       setTimeout(() => setCopied(false), 2500)
     }).catch(() => {
-      // Fallback: select the URL in a prompt
       window.prompt('Copia aquest URL per compartir:', url)
     })
   }
@@ -109,6 +109,86 @@ function ShareButton({
   )
 }
 
+/* ── Camera preset buttons ────────────────────────────────────────────────── */
+const PRESET_OPTIONS: { id: CameraPreset; label: string; icon: React.ReactNode }[] = [
+  {
+    id: 'person',
+    label: 'Vista a peu de carrer',
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+        <circle cx="7" cy="3" r="1.5" stroke="currentColor" strokeWidth="1.2" />
+        <path d="M7 5v4M5 7h4M5.5 13l1.5-4 1.5 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    id: 'default',
+    label: 'Vista estàndard',
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+        <rect x="2" y="5" width="10" height="7" rx="1" stroke="currentColor" strokeWidth="1.2" />
+        <path d="M4 5V4a3 3 0 016 0v1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    id: 'zenith',
+    label: 'Vista zenital',
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+        <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.2" />
+        <circle cx="7" cy="7" r="2" stroke="currentColor" strokeWidth="1.2" />
+        <line x1="7" y1="2" x2="7" y2="1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+]
+
+function CameraPresetButtons({
+  active,
+  onChange,
+}: {
+  active: CameraPreset
+  onChange: (p: CameraPreset) => void
+}) {
+  return (
+    <div
+      style={{ display: 'flex', gap: 4 }}
+      role="group"
+      aria-label="Vista de càmera"
+    >
+      {PRESET_OPTIONS.map((p) => (
+        <button
+          key={p.id}
+          onClick={() => onChange(p.id)}
+          aria-label={p.label}
+          aria-pressed={active === p.id}
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: 'var(--radius)',
+            border: '1px solid',
+            borderColor: active === p.id ? 'var(--color-accent)' : 'var(--color-border)',
+            backgroundColor: active === p.id
+              ? 'var(--color-accent-bg)'
+              : 'oklch(99% 0.004 72 / 0.88)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            color: active === p.id ? 'var(--color-accent)' : 'var(--color-text-2)',
+            transition: 'border-color 150ms var(--ease-out), background-color 150ms var(--ease-out), color 150ms var(--ease-out)',
+          }}
+        >
+          {p.icon}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 /* ── Main ─────────────────────────────────────────────────────────────────── */
 export default function Step3Viewer({ products }: { products: Product[] }) {
   const scene = useConfiguratorStore((s) => s.scene)
@@ -116,6 +196,9 @@ export default function Step3Viewer({ products }: { products: Product[] }) {
   const finishIndex = useConfiguratorStore((s) => s.finishIndex)
   const granulometryIndex = useConfiguratorStore((s) => s.granulometryIndex)
   const goToStep = useConfiguratorStore((s) => s.goToStep)
+
+  const [cameraPreset, setCameraPreset] = useState<CameraPreset>('default')
+  const [panelExpanded, setPanelExpanded] = useState(false)
 
   const selectedProduct = products.find((p) => p.id === productId)
   const sceneDef = SCENES.find((sc) => sc.id === scene)
@@ -139,13 +222,14 @@ export default function Step3Viewer({ products }: { products: Product[] }) {
             productId={productId ?? ''}
             finishName={selectedFinish?.name ?? ''}
             colorHex={colorHex}
+            cameraPreset={cameraPreset}
           />
         </Suspense>
       </div>
 
-      {/* ── Left info panel ── */}
+      {/* ── Left info panel (desktop) / Bottom sheet (mobile) ── */}
       <aside
-        className="panel-glass"
+        className={`panel-glass step3-panel ${panelExpanded ? 'step3-panel-expanded' : 'step3-panel-collapsed'}`}
         style={{
           position: 'absolute',
           top: 16,
@@ -153,20 +237,59 @@ export default function Step3Viewer({ products }: { products: Product[] }) {
           bottom: 16,
           width: 240,
           borderRadius: 'var(--radius-lg)',
-          padding: 20,
           zIndex: 10,
           display: 'flex',
           flexDirection: 'column',
-          gap: 16,
-          overflowY: 'auto',
         }}
         aria-label="Informació del paviment seleccionat"
       >
-        {/* Scene context */}
-        {sceneDef && (
-          <div>
-            <p
-              style={{
+        {/* Drag handle (mobile only) */}
+        <div
+          className="step3-drag-handle"
+          onClick={() => setPanelExpanded((v) => !v)}
+          aria-expanded={panelExpanded}
+          aria-controls="step3-panel-content"
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setPanelExpanded((v) => !v) }}
+          style={{ display: 'none' }}
+        >
+          <div style={{
+            width: 32,
+            height: 4,
+            borderRadius: 99,
+            backgroundColor: 'var(--color-border-2)',
+          }} />
+          <span style={{
+            marginLeft: 10,
+            fontFamily: 'var(--font-display)',
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            color: 'var(--color-text-muted)',
+          }}>
+            {selectedProduct?.brand ?? 'Paviment'}
+          </span>
+        </div>
+
+        {/* Panel content */}
+        <div
+          id="step3-panel-content"
+          className="step3-panel-inner"
+          style={{
+            padding: 20,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 16,
+            flex: 1,
+            overflowY: 'auto',
+          }}
+        >
+          {/* Scene context */}
+          {sceneDef && (
+            <div>
+              <p style={{
                 fontFamily: 'var(--font-display)',
                 fontSize: '0.6rem',
                 fontWeight: 700,
@@ -174,37 +297,31 @@ export default function Step3Viewer({ products }: { products: Product[] }) {
                 textTransform: 'uppercase',
                 color: 'var(--color-text-muted)',
                 marginBottom: 2,
-              }}
-            >
-              Escena
-            </p>
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--color-text-2)' }}>
-              {sceneDef.label}
-            </p>
-          </div>
-        )}
+              }}>
+                Escena
+              </p>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--color-text-2)' }}>
+                {sceneDef.label}
+              </p>
+            </div>
+          )}
 
-        <div style={{ borderTop: '1px solid var(--color-border)' }} />
+          <div style={{ borderTop: '1px solid var(--color-border)' }} />
 
-        {/* Product info */}
-        {selectedProduct ? (
-          <>
-            {/* Color swatch + name */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div
-                style={{
+          {/* Product info */}
+          {selectedProduct ? (
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{
                   width: 36,
                   height: 36,
                   borderRadius: 8,
                   backgroundColor: colorHex,
                   border: '1px solid var(--color-border)',
                   flexShrink: 0,
-                }}
-                aria-hidden="true"
-              />
-              <div>
-                <p
-                  style={{
+                }} aria-hidden="true" />
+                <div>
+                  <p style={{
                     fontFamily: 'var(--font-display)',
                     fontSize: '1rem',
                     fontWeight: 800,
@@ -212,21 +329,18 @@ export default function Step3Viewer({ products }: { products: Product[] }) {
                     textTransform: 'uppercase',
                     color: 'var(--color-text)',
                     lineHeight: 1.1,
-                  }}
-                >
-                  {selectedProduct.brand}
-                </p>
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.72rem', color: 'var(--color-text-muted)', marginTop: 2 }}>
-                  {selectedProduct.colors[0]?.name}
-                </p>
+                  }}>
+                    {selectedProduct.brand}
+                  </p>
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.72rem', color: 'var(--color-text-muted)', marginTop: 2 }}>
+                    {selectedProduct.colors[0]?.name}
+                  </p>
+                </div>
               </div>
-            </div>
 
-            {/* Finish */}
-            {selectedFinish && (
-              <div>
-                <p
-                  style={{
+              {selectedFinish && (
+                <div>
+                  <p style={{
                     fontFamily: 'var(--font-display)',
                     fontSize: '0.6rem',
                     fontWeight: 700,
@@ -234,21 +348,18 @@ export default function Step3Viewer({ products }: { products: Product[] }) {
                     textTransform: 'uppercase',
                     color: 'var(--color-text-muted)',
                     marginBottom: 3,
-                  }}
-                >
-                  Acabat
-                </p>
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--color-text-2)', lineHeight: 1.4 }}>
-                  {selectedFinish.name}
-                </p>
-              </div>
-            )}
+                  }}>
+                    Acabat
+                  </p>
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--color-text-2)', lineHeight: 1.4 }}>
+                    {selectedFinish.name}
+                  </p>
+                </div>
+              )}
 
-            {/* Granulometry */}
-            {selectedGranulo && (
-              <div>
-                <p
-                  style={{
+              {selectedGranulo && (
+                <div>
+                  <p style={{
                     fontFamily: 'var(--font-display)',
                     fontSize: '0.6rem',
                     fontWeight: 700,
@@ -256,86 +367,75 @@ export default function Step3Viewer({ products }: { products: Product[] }) {
                     textTransform: 'uppercase',
                     color: 'var(--color-text-muted)',
                     marginBottom: 3,
-                  }}
-                >
-                  Granulometria
-                </p>
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--color-text-2)' }}>
-                  {selectedGranulo.size}
-                </p>
-              </div>
-            )}
+                  }}>
+                    Granulometria
+                  </p>
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--color-text-2)' }}>
+                    {selectedGranulo.size}
+                  </p>
+                </div>
+              )}
 
-            {/* Tech note */}
-            <div
-              style={{
+              <div style={{
                 padding: '10px 12px',
                 borderRadius: 'var(--radius)',
                 backgroundColor: 'var(--color-surface-2)',
                 border: '1px solid var(--color-border)',
-              }}
-            >
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
-                {selectedProduct.technical.eco}
-              </p>
-            </div>
-          </>
-        ) : (
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--color-text-muted)' }}>
-            Cap producte seleccionat
-          </p>
-        )}
-
-        {/* Spacer */}
-        <div style={{ flex: 1 }} />
-
-        {/* Actions */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {/* Share */}
-          {scene && productId && (
-            <ShareButton
-              scene={scene}
-              productId={productId}
-              finishIndex={finishIndex}
-              granulometryIndex={granulometryIndex}
-            />
+              }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
+                  {selectedProduct.technical.eco}
+                </p>
+              </div>
+            </>
+          ) : (
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--color-text-muted)' }}>
+              Cap producte seleccionat
+            </p>
           )}
 
-          {/* Back */}
-          <button
-            onClick={() => goToStep(2)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '8px 12px',
-              borderRadius: 'var(--radius)',
-              border: '1px solid var(--color-border)',
-              backgroundColor: 'transparent',
-              color: 'var(--color-text-muted)',
-              fontFamily: 'var(--font-body)',
-              fontSize: '0.8rem',
-              cursor: 'pointer',
-              transition: 'color 150ms',
-            }}
-            aria-label="Tornar a la selecció de producte"
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            Canviar producte
-          </button>
+          <div style={{ flex: 1 }} />
+
+          {/* Actions */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {scene && productId && (
+              <ShareButton
+                scene={scene}
+                productId={productId}
+                finishIndex={finishIndex}
+                granulometryIndex={granulometryIndex}
+              />
+            )}
+            <button
+              onClick={() => goToStep(2)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '8px 12px',
+                borderRadius: 'var(--radius)',
+                border: '1px solid var(--color-border)',
+                backgroundColor: 'transparent',
+                color: 'var(--color-text-muted)',
+                fontFamily: 'var(--font-body)',
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+                transition: 'color 150ms',
+              }}
+              aria-label="Tornar a la selecció de producte"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Canviar producte
+            </button>
+          </div>
         </div>
       </aside>
 
       {/* ── Bottom-right CTA ── */}
       <div
-        style={{
-          position: 'absolute',
-          bottom: 24,
-          right: 24,
-          zIndex: 10,
-        }}
+        className="step3-cta-mobile"
+        style={{ position: 'absolute', bottom: 24, right: 24, zIndex: 10 }}
       >
         <button
           onClick={() => goToStep(4)}
@@ -369,23 +469,26 @@ export default function Step3Viewer({ products }: { products: Product[] }) {
         </button>
       </div>
 
-      {/* ── Texture note ── */}
+      {/* ── Camera preset buttons + texture note ── */}
       <div
         style={{
           position: 'absolute',
           bottom: 24,
           left: 272,
           zIndex: 10,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 8,
+          alignItems: 'flex-start',
         }}
       >
-        <p
-          style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: '0.7rem',
-            color: 'rgba(255,255,255,0.55)',
-            fontStyle: 'italic',
-          }}
-        >
+        <CameraPresetButtons active={cameraPreset} onChange={setCameraPreset} />
+        <p style={{
+          fontFamily: 'var(--font-body)',
+          fontSize: '0.7rem',
+          color: 'rgba(255,255,255,0.55)',
+          fontStyle: 'italic',
+        }}>
           Textura sintètica — representació aproximada
         </p>
       </div>
