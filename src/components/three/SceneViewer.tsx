@@ -21,7 +21,11 @@ function useAssetExists(url: string | null): AssetStatus {
   useEffect(() => {
     if (!url) { setStatus('missing'); return }
     fetch(url, { method: 'HEAD' })
-      .then((r) => setStatus(r.ok ? 'found' : 'missing'))
+      .then((r) => {
+        // Vite SPA fallback serves index.html (text/html) for unknown paths → treat as missing
+        const ct = r.headers.get('content-type') ?? ''
+        setStatus(r.ok && !ct.includes('text/html') ? 'found' : 'missing')
+      })
       .catch(() => setStatus('missing'))
   }, [url])
   return status
