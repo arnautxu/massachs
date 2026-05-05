@@ -5,14 +5,6 @@ export type UseType =
   | 'vehicular_lleuger'
   | 'vehicular_pesat'
 
-export type SceneId =
-  | 'vorera-urbana'
-  | 'placa-publica'
-  | 'parc-cami'
-  | 'pati-escolar'
-  | 'acces-rodat'
-  | 'jardi-privat'
-
 export interface ProductColor {
   name: string
   description: string
@@ -78,12 +70,4 @@ export interface Product {
   sample_image_url: string
   pdf_urls: string[]
   contact?: { email?: string; phone?: string }
-}
-
-export interface ConfiguratorState {
-  scene: SceneId | null
-  useType: UseType | null
-  productId: string | null
-  finishIndex: number
-  granulometryIndex: number
 }
