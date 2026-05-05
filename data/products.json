@@ -1,0 +1,384 @@
+{
+  "_schema_version": "1.0.0",
+  "_generated": "2026-05-05",
+  "_note": "Dades extretes de les webs oficials. Els camps marcats _pending:true no apareixen explícitament a les webs i s'hauran de confirmar amb Grup Massachs.",
+  "products": [
+    {
+      "id": "terra-solida",
+      "brand": "Terra Sòlida",
+      "website": "http://www.terrasolida.com",
+      "logo_url": "_pending",
+      "short_description": "Paviment de terra estabilitzada aprofitant l'àrid existent del propi camí. Sistema certificat de trituració, mescla d'additius naturals i compactació.",
+      "long_description": "Terra Sòlida estabilitza la terra ja existent al camí o espai sense necessitat d'importar àrids. El procés certificat combina triturament de la terra, addició de lligams i additius naturals (polímers, calç, sals minerals, enzims) i compactació mecànica. El resultat és un paviment natural amb aspecte de terra compactada d'alta resistència a l'erosió que envelleix positivament sense manteniment.",
+      "key_differentiator": "Aprofita l'àrid existent in situ, minimitzant transport i impacte ambiental. Reducció de cost >60% respecte pavimentació tradicional.",
+      "applications": [
+        "Camins rurals",
+        "Pistes forestals",
+        "Camins de ronda",
+        "Vies verdes",
+        "Itineraris de senderisme",
+        "Accesos forestals",
+        "Rutes cardiovasculars"
+      ],
+      "use_types": ["peatonal_lleuger", "peatonal_intens"],
+      "colors": [
+        {
+          "name": "Terra natural de l'indret",
+          "description": "El color resultant depèn de la terra existent al camí. Típicament tonalitats ocre-terroses.",
+          "hex_approx": "#B8956A",
+          "_pending": true,
+          "_note": "Hex no publicat al web. Estimació basada en aparença visual típica. Variables per zona geogràfica."
+        }
+      ],
+      "finishes": [
+        {
+          "name": "Terra compactada estabilitzada",
+          "description": "Acabat natural de terra compactada. Aspecte de camí de terra de qualitat sense artificialitat.",
+          "_pending": false
+        }
+      ],
+      "granulometries": [
+        {
+          "size": "_pending",
+          "description": "Granulometria de la terra existent, tritutada i processada in situ",
+          "_pending": true
+        }
+      ],
+      "thicknesses_cm": {
+        "pedestrian": "_pending",
+        "vehicular_light": "_pending",
+        "_pending": true,
+        "_note": "Gruixos no publicats explícitament per Terra Sòlida. Consultar fitxa tècnica."
+      },
+      "technical": {
+        "drainage": "Paviment permeable per naturalesa de la terra estabilitzada",
+        "drainage_detail": "_pending",
+        "max_slope_pct": "_pending",
+        "compressive_strength_mpa": "_pending",
+        "maintenance": "Envelliment correcte sense manteniment. Soluciona problemes de fang, pols, roderes i herbes.",
+        "installation_methods": ["mecanitzada", "manual"],
+        "additives": ["polímers", "calç", "sals minerals", "enzims", "fibres de vidre"],
+        "base_options": ["terreny natural", "base d'aportació 0/12-0/20mm", "paviments existents"],
+        "eco": "Sistema que aprofita materials existents. Mínim transport. 100% reciclable.",
+        "certifications": ["Marca Q (des de 2012)"],
+        "standards": ["_pending"],
+        "_pending_fields": ["drainage_detail", "max_slope_pct", "compressive_strength_mpa", "thicknesses", "standards"]
+      },
+      "supply_formats": ["_pending"],
+      "sample_image_url": "http://terrasolida.com/",
+      "pdf_urls": [],
+      "_web_note": "Web amb certificat SSL autofirmat, no accessible per HTTPS. Moltes pàgines de contingut. Imatges no accessibles via fetch."
+    },
+    {
+      "id": "saulo-solid",
+      "brand": "Sauló Sòlid",
+      "website": "https://www.saulosolid.com",
+      "logo_url": "_pending",
+      "short_description": "Sistema certificat de paviment de terra estabilitzada amb aportació d'àrid de sauló i lligams naturals. Alta qualitat i molt alta resistència a l'erosió.",
+      "long_description": "Sauló Sòlid construeix paviments de terra d'alta estabilització importat àrid de sauló seleccionat al qual s'incorporen lligams i additius naturals. El sistema certificat (Marca Q des de 2012) garanteix un paviment natural d'elevada resistència que suporta trànsit rodat sense necessitat de bordills ni cunetes. El correcte envelliment sense manteniment n'és una de les virtuts principals.",
+      "key_differentiator": "Àrid d'aportació seleccionat + sistema certificat = màxima homogeneïtat i resistència garantida. Marca Q i permeabilitat documentada.",
+      "applications": [
+        "Voreres (fora de nucli urbà)",
+        "Aparcaments",
+        "Camins de terra",
+        "Camins de ronda",
+        "Places públiques",
+        "Jardins i parcs",
+        "Vies verdes",
+        "Carrils bici",
+        "Rutes cardiovasculars",
+        "Itineraris de senderisme",
+        "Zones esportives",
+        "Espais enjardinats urbans"
+      ],
+      "use_types": ["peatonal_lleuger", "peatonal_intens", "mixt", "vehicular_lleuger"],
+      "colors": [
+        {
+          "name": "Sauló natural",
+          "description": "Color natural del sauló (granit descompost). Tonalitats sorra-beix càlid amb matisos grisencs.",
+          "hex_approx": "#C4A87A",
+          "_pending": true,
+          "_note": "Hex no publicat. Estimació visual basada en granit descompost típic de la zona gironina."
+        }
+      ],
+      "finishes": [
+        {
+          "name": "Terra estabilitzada natural",
+          "description": "Acabat de sauló compactat, aspecte de camí de terra d'alta qualitat.",
+          "_pending": false
+        }
+      ],
+      "granulometries": [
+        {
+          "size": "_pending",
+          "description": "Àrid de sauló d'aportació, granulometria definida en projecte",
+          "_pending": true,
+          "_note": "Granulometria base no publicada. Additius: polímers, ciment, calç, sals minerals, enzims, fibres de vidre."
+        }
+      ],
+      "thicknesses_cm": {
+        "pedestrian_and_bike": "8–10",
+        "vehicular_tertiary": "12–15",
+        "_pending": false
+      },
+      "technical": {
+        "drainage": "Permeable. Informe tècnic de permeabilitat disponible.",
+        "drainage_detail": "_pending",
+        "max_slope_pct": 14,
+        "max_slope_execution_pct": 28,
+        "compressive_strength_mpa": "_pending",
+        "maintenance": "Envelliment correcte sense manteniment durant anys. Sense necessitat de bordills ni cunetes.",
+        "installation_methods": ["mecanitzada", "manual (sols ús no rodat)"],
+        "additives": ["polímers", "ciment", "calç", "sals minerals", "enzims", "fibres de vidre"],
+        "base_options": [
+          "Terreny natural (sols vianants, compactació òptima)",
+          "Base d'aportació 0/12-0/20mm (natural o reciclat)",
+          "Paviments existents (formigó, asfalt, panots)"
+        ],
+        "eco": "Àrid natural. Sistema baix impacte. Reciclable.",
+        "certifications": ["Marca Q (des de 2012)"],
+        "standards": ["_pending"],
+        "quality_control": "Control humitat, calibratge homogeni de la mescla, assaigs periòdics de resistència",
+        "_pending_fields": ["drainage_detail", "compressive_strength_mpa", "granulometry_base", "standards"]
+      },
+      "supply_formats": ["execució in situ (no subministre d'àrid solt)"],
+      "contact": {
+        "email": "info@saulosolid.com",
+        "phone": "673 68 55 77"
+      },
+      "sample_image_url": "https://www.saulosolid.com",
+      "pdf_urls": [],
+      "_web_note": "Web en producció. Moltes pàgines de contingut, algunes retornen imatges JPEG en lloc de HTML."
+    },
+    {
+      "id": "saulo-conglomerat",
+      "brand": "Sauló Conglomerat",
+      "website": "https://www.sauloconglomerat.com",
+      "logo_url": "_pending",
+      "short_description": "Paviment dur continu de sauló, totalment integrat al paisatge. Aspecte natural amb resistència equiparable al formigó.",
+      "long_description": "Sauló Conglomerat és un paviment exterior continu, dur i resistent que combina l'aspecte completament natural del sauló amb la resistència mecànica del formigó. Ideal per superfícies amb trànsit rodat que requereixen integració paisatgística. Gairebé nul manteniment i envelliment positiu.",
+      "key_differentiator": "Resistència de formigó amb aspecte de sauló natural. Triple certificació ISO + Marca Q. Paviment dur continu (no llambordes, no plaques).",
+      "applications": [
+        "Camins",
+        "Voreres",
+        "Zones verdes i parcs",
+        "Aparcaments",
+        "Àrees amb trànsit rodat"
+      ],
+      "use_types": ["peatonal_lleuger", "peatonal_intens", "mixt", "vehicular_lleuger", "vehicular_pesat"],
+      "colors": [
+        {
+          "name": "Sauló natural compactat",
+          "description": "Color del sauló (granit descompost). Tonalitats beix-gris càlid. L'aspecte és de terra dura i compacta.",
+          "hex_approx": "#B8A882",
+          "_pending": true,
+          "_note": "Hex no publicat. Estimació visual."
+        }
+      ],
+      "finishes": [
+        {
+          "name": "Paviment dur continu natural",
+          "description": "Acabat de sauló conglomerado, superfície dura i compacta d'aspecte natural.",
+          "_pending": false
+        }
+      ],
+      "granulometries": [
+        {
+          "size": "_pending",
+          "description": "Sauló conglomerat, granulometria en funció de l'aplicació",
+          "_pending": true
+        }
+      ],
+      "thicknesses_cm": {
+        "_pending": true,
+        "_note": "Gruixos no publicats al web."
+      },
+      "technical": {
+        "drainage": "_pending",
+        "compressive_strength_mpa": "_pending",
+        "_note": "Resistència comparable al formigó (no quantificada al web)",
+        "maintenance": "Fantàstic envelliment sense manteniment. Llarga vida útil.",
+        "installation_methods": ["mecanitzada"],
+        "eco": "Material natural d'origen geològic. Integrat al paisatge.",
+        "certifications": ["ISO 9001", "ISO 14001", "ISO 45001", "Marca Q"],
+        "standards": ["_pending"],
+        "_pending_fields": ["drainage", "compressive_strength_mpa", "granulometry", "thicknesses", "standards"]
+      },
+      "supply_formats": ["execució in situ"],
+      "sample_image_url": "https://www.sauloconglomerat.com",
+      "pdf_urls": [],
+      "_web_note": "Web molt breu. Pocs detalls tècnics. Únic projecte mencionat: aparcament a Sant Cugat del Vallès."
+    },
+    {
+      "id": "saulo-parc",
+      "brand": "Sauló Parc",
+      "website": "https://www.sauloparc.com",
+      "logo_url": "_pending",
+      "short_description": "Àrid de sauló garbellat i tècnicament millorat, amb corba granulomètrica optimitzada per reduir l'erosió. Extret de la pedrera certificada RA-411 Mas Patxot.",
+      "long_description": "Sauló Parc és un àrid d'àrids de granit descompost (sauló) seleccionat i garbellat amb una corba granulomètrica millorada respecte al sauló convencional. Gràcies a més de 20 anys d'experiència a la pedrera RA-411 Mas Patxot, combina àrid triturat amb àrid classificat per assolir menys erosió i millor comportament mecànic. La marca d'origen garanteix homogeneïtat de color i qualitat en futures reposicions.",
+      "key_differentiator": "Producte granular solt (no cimentat). Corba granulomètrica millorada. Marca d'origen per garantir reproduïbilitat de color i qualitat. Vàries granulometries en estoc.",
+      "applications": [
+        "Aparcaments",
+        "Places",
+        "Avingudes",
+        "Passeigs marítims",
+        "Camins rurals",
+        "Càmpings",
+        "Accesos a platges i cales",
+        "Escales i canvis de nivell",
+        "Zones de mercat",
+        "Carrils bici",
+        "Corredors verds",
+        "Zones esportives",
+        "Pistes de petanca",
+        "Camps de futbol aficionat",
+        "Parcs i jardins",
+        "Espais enjardinats",
+        "Rotondes públiques",
+        "Regeneració de platges",
+        "Zones infantils",
+        "Ruïnes arqueològiques"
+      ],
+      "use_types": ["peatonal_lleuger", "peatonal_intens", "mixt"],
+      "colors": [
+        {
+          "name": "Sauló natural Mas Patxot",
+          "description": "Color natural de la pedrera RA-411 Mas Patxot. Granit descompost de tonalitat sorra càlida amb matisos beixos i grisos.",
+          "hex_approx": "#C8B88E",
+          "_pending": true,
+          "_note": "Hex no publicat. Estimació visual. La marca d'origen garanteix homogeneïtat entre partides."
+        }
+      ],
+      "finishes": [
+        {
+          "name": "Àrid garbellat natural",
+          "description": "Acabat de grava fina natural. Superfície porosa i drenant, aspecte de sauló millorat.",
+          "_pending": false
+        }
+      ],
+      "granulometries": [
+        { "size": "0/6 mm", "applications": ["Zones infantils", "Paviments fins", "Reblert"], "_pending": false },
+        { "size": "0/10 mm", "applications": ["Camins lleugers", "Jardins"], "_pending": false },
+        { "size": "0/12 mm", "applications": ["Camins", "Zones peatonals"], "_pending": false },
+        { "size": "0/20 mm", "applications": ["Camins amb trànsit lleuger", "Aparcaments"], "_pending": false },
+        { "size": "4/8 mm", "applications": ["Capa superficial decorativa", "Drenatge"], "_pending": false },
+        { "size": "12/25 mm", "applications": ["Base drenant", "Graves gruixudes"], "_pending": false },
+        { "size": "25/65 mm", "applications": ["Base estructural", "Drenatge profund"], "_pending": false },
+        { "size": "65/150 mm", "applications": ["Base de fonament", "Grans pendents"], "_pending": false }
+      ],
+      "thicknesses_cm": {
+        "_pending": true,
+        "_note": "Producte a granel. El gruix de la capa s'especifica en projecte. Tipicament 10–20cm."
+      },
+      "technical": {
+        "drainage": "Àrid solt permeable per naturalesa. Excel·lent drenatge.",
+        "compressive_strength_mpa": "_pending",
+        "maintenance": "Menys manteniment que el sauló convencional gràcies a la corba granulomètrica millorada.",
+        "installation_methods": ["granel", "big bag"],
+        "quarry": {
+          "name": "Mas Patxot",
+          "reference": "RA-411",
+          "experience_years": 20
+        },
+        "eco": "Material natural de pedrera. 100% reciclable. Km0 per a la zona gironina.",
+        "certifications": ["_pending"],
+        "standards": ["_pending"],
+        "quality_control": "Identificació petrogràfica. Marca d'origen. Assaigs de laboratori. Granulometries testades.",
+        "_pending_fields": ["certifications", "standards", "compressive_strength_mpa", "thicknesses"]
+      },
+      "supply_formats": ["big bag", "granel"],
+      "sample_image_url": "https://www.sauloparc.com",
+      "pdf_urls": [],
+      "_web_note": "Web complerta amb seccions de productes, projectes, característiques, aplicacions i multimèdia."
+    },
+    {
+      "id": "terrapref",
+      "brand": "TerraPref",
+      "website": "https://www.terrapref.com",
+      "logo_url": "_pending",
+      "short_description": "Llamborda ecològica prefabricada de terra natural. El sistema de fabricació de llambordes més respectuós amb el medi ambient, amb àrids de km0.",
+      "long_description": "TerraPref és una llamborda prefabricada de terra compactada que integra àrids extrets de la mateixa obra o de km0. La seva fabricació és la més sostenible del sector de llambordes naturals. Col·locada sobre sorra o morter, ofereix estabilitat permanent. Es pot reparar de forma puntual sense substituir tota la superfície. Resistent al trànsit pesat (verificat per I+D). Envelliment positiu que l'integra al paisatge.",
+      "key_differentiator": "Única llamborda prefabricada de terra natural del catàleg. Dimensions estandarditzades però modificables. Normativa UNE 1338. Possible reparació puntual.",
+      "applications": [
+        "Jardins privats i residencials",
+        "Accesos a habitatges",
+        "Camins rurals",
+        "Urbanització de nuclis urbans (zones historiques)",
+        "Àrees amb trànsit pesat",
+        "Masies i rehabilitació patrimonial",
+        "Projectes de baixa petjada ambiental",
+        "Escales i canvis de nivell"
+      ],
+      "use_types": ["peatonal_lleuger", "peatonal_intens", "mixt", "vehicular_lleuger", "vehicular_pesat"],
+      "colors": [
+        {
+          "name": "Terra natural",
+          "description": "Color de la terra i àrids locals emprats en fabricació. Tonalitats terra-ocre variables segons zona.",
+          "hex_approx": "#A8906A",
+          "_pending": true,
+          "_note": "Hex no publicat. Estimació visual. El color depèn dels àrids de km0 de cada obra."
+        }
+      ],
+      "finishes": [
+        {
+          "name": "Llamborda de terra natural",
+          "description": "Superfície de terra compactada prefabricada. Acabat rústic natural, integrat al paisatge.",
+          "_pending": false
+        }
+      ],
+      "dimensions": {
+        "width_cm": 20.32,
+        "length_cm": 20.32,
+        "thickness_cm": 6.3,
+        "customizable": true,
+        "_note": "Dimensions estàndard. Modificables per comandes especials.",
+        "_pending": false
+      },
+      "granulometries": [
+        {
+          "size": "_pending",
+          "description": "Àrids de la mateixa obra o de km0, granulometria definida per I+D",
+          "_pending": true
+        }
+      ],
+      "thicknesses_cm": {
+        "standard": 6.3,
+        "customizable": true,
+        "_pending": false
+      },
+      "technical": {
+        "drainage": "Depèn de la col·locació (sobre sorra: drenatge; sobre formigó: impermeable).",
+        "compressive_strength_mpa": {
+          "min": 4.5,
+          "max": 8.0,
+          "standard": "UNE 1338 a 28 dies",
+          "_note": "Variable segons àrid, tipus i dosificació del lligam"
+        },
+        "flexural_strength_mpa": {
+          "min": 0.10,
+          "max": 0.15,
+          "_note": "Variable segons àrid, tipus i dosificació del lligam"
+        },
+        "maintenance": "Reparació puntual possible sense retirar tota la superfície. Envelliment positiu.",
+        "installation_methods": ["sobre sorra", "sobre morter", "sobre formigó", "sobre paviment existent"],
+        "eco": "Fabricació amb àrids km0. Sistema de fabricació més sostenible del mercat. Reducció de CO2 en fabricació i transport.",
+        "certifications": ["_pending"],
+        "standards": ["UNE 1338"],
+        "resistance_verified": "Trànsit pesat (verificat per departament I+D)",
+        "_pending_fields": ["certifications", "granulometry", "color_options"]
+      },
+      "supply_formats": ["llambordes prefabricades (unitats)"],
+      "sample_image_url": "https://www.terrapref.com",
+      "pdf_urls": [],
+      "_web_note": "Web amb seccions: Llamborda natural, Detalls tècnics, Exemples de col·locació, Contacte."
+    }
+  ],
+  "_compatibility_matrix": {
+    "peatonal_lleuger": ["terra-solida", "saulo-solid", "saulo-conglomerat", "saulo-parc", "terrapref"],
+    "peatonal_intens": ["saulo-solid", "saulo-conglomerat", "saulo-parc", "terrapref"],
+    "mixt": ["saulo-solid", "saulo-conglomerat", "saulo-parc", "terrapref"],
+    "vehicular_lleuger": ["saulo-solid", "saulo-conglomerat", "terrapref"],
+    "vehicular_pesat": ["saulo-conglomerat", "terrapref"],
+    "_note": "Matriu provisional basada en informació de les webs. Confirmar amb fitxes tècniques."
+  }
+}

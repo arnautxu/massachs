@@ -1,0 +1,150 @@
+@import "tailwindcss";
+
+/* ─── Design Tokens ─────────────────────────────────────────────────────── */
+@theme {
+  /* Fonts */
+  --font-display: "Big Shoulders Display", system-ui, sans-serif;
+  --font-body: "Hanken Grotesk", system-ui, sans-serif;
+
+  /* Color palette — OKLCH, warm earth tones */
+  /* Background & surfaces */
+  --color-bg:         oklch(97% 0.008 72);
+  --color-surface:    oklch(99% 0.004 72);
+  --color-surface-2:  oklch(94% 0.012 70);
+
+  /* Text */
+  --color-text:       oklch(18% 0.014 58);
+  --color-text-2:     oklch(40% 0.020 62);
+  --color-text-muted: oklch(62% 0.016 68);
+
+  /* Accent — sauló ochre */
+  --color-accent:     oklch(52% 0.090 55);
+  --color-accent-2:   oklch(44% 0.085 52);
+  --color-accent-3:   oklch(66% 0.075 60);
+  --color-accent-bg:  oklch(94% 0.025 68);
+
+  /* Borders */
+  --color-border:     oklch(86% 0.018 72);
+  --color-border-2:   oklch(74% 0.025 68);
+
+  /* Spacing scale (4pt) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+
+  /* Type scale */
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-lg:   1.125rem;
+  --text-xl:   1.25rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  2rem;
+  --text-4xl:  2.75rem;
+  --text-5xl:  3.75rem;
+  --text-6xl:  5rem;
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius:    8px;
+  --radius-lg: 16px;
+
+  /* Easing — Emil Kowalski custom curves */
+  --ease-out:    cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* Shadows */
+  --shadow-sm:  0 1px 3px oklch(18% 0.014 58 / 0.08), 0 1px 2px oklch(18% 0.014 58 / 0.04);
+  --shadow:     0 4px 12px oklch(18% 0.014 58 / 0.08), 0 2px 4px oklch(18% 0.014 58 / 0.04);
+  --shadow-lg:  0 20px 48px oklch(18% 0.014 58 / 0.10), 0 8px 16px oklch(18% 0.014 58 / 0.06);
+}
+
+/* ─── Base ──────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Typography ─────────────────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+p { margin: 0; }
+
+/* ─── Focus ──────────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-2);
+  border-radius: 99px;
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Canvas layer ───────────────────────────────────────────────────────── */
+canvas {
+  display: block;
+  touch-action: none;
+}
+
+/* ─── Utilities ──────────────────────────────────────────────────────────── */
+.font-display  { font-family: var(--font-display); }
+.font-body     { font-family: var(--font-body); }
+
+.text-balance  { text-wrap: balance; }
+.text-pretty   { text-wrap: pretty; }
+
+/* Panel backdrop — subtle blur, NOT glassmorphism */
+.panel-glass {
+  background: oklch(99% 0.004 72 / 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+}
