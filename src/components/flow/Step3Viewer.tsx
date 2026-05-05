@@ -4,7 +4,7 @@ import { SCENES } from '@/types/scene'
 import { buildShareUrl } from '@/lib/products'
 import type { Product } from '@/types/product'
 
-const DummyScene = lazy(() => import('@/components/three/DummyScene'))
+const SceneViewer = lazy(() => import('@/components/three/SceneViewer'))
 
 function SceneLoader() {
   return (
@@ -134,7 +134,12 @@ export default function Step3Viewer({ products }: { products: Product[] }) {
       {/* ── 3D Canvas ── */}
       <div style={{ position: 'absolute', inset: 0 }}>
         <Suspense fallback={<SceneLoader />}>
-          <DummyScene productColor={colorHex} />
+          <SceneViewer
+            sceneId={scene ?? 'vorera-urbana'}
+            productId={productId ?? ''}
+            finishName={selectedFinish?.name ?? ''}
+            colorHex={colorHex}
+          />
         </Suspense>
       </div>
 
